@@ -31,7 +31,7 @@ if ~exist(outDir,'dir')
 end
 letterCode = 97:122;
 dirSet = dir(fullfile(baseDir,[siteName,'*']));
-for itr0 = 2:length(dirSet)
+for itr0 = 1:length(dirSet)
     fSave = [];
     if dirSet(itr0).isdir &&~strcmp(dirSet(itr0).name,'.')&&...
             ~strcmp(dirSet(itr0).name,'..')
@@ -80,6 +80,9 @@ for itr0 = 2:length(dirSet)
                     % f = fHR;
                     if isempty(fSave)
                         fSave = f;
+                    end
+                    if isempty(f)
+                        f = fSave;
                     end
                     dTs = (tsWin/2) - maxIdx; % which is bigger, the time series or the window?
                     dTe =  (tsWin/2)- (length(thisClick)-maxIdx); % is the length after the peak bigger than the window?
