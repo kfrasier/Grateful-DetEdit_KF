@@ -9,7 +9,7 @@
 % Then change line 22 of detEdit to match the settings file you want to
 % use.
 
-filePrefix = 'GofMX_MC03_disk08'; % File name to match. 
+filePrefix = 'JAX11D_disk01'; % File name to match. 
 % File prefix should include deployment, site, (disk is optional). 
 % Example: 
 % File name 'GofMX_DT01_disk01-08_TPWS2.mat' 
@@ -20,7 +20,7 @@ sp = 'De'; % species code (can be: 'Ko' or 'k' (kogia);
 % 'Zc' or 'z' (Cuvier's),'Me' or 'm' (Gervais'), 'Md' (Blainville's), BWG,...
 % 'De' (Dolphin), 'Po' (porpoise), 'MFA', 'whs' (whistles), 'Dl' (beluga)
 c4fd = 100; % Interval to check for false detections
-sdir = 'F:\MC\GOM_MC_Metadata\TPWS'; %Directory with TPWS files
+sdir = 'G:\JAX11D\TPWS'; %Directory with TPWS files
 %tfName = 'E:\TF_files'; % Directory ...
 % with .tf files (directory containing folders with different series ...
 % (e.g. 300_series,400_series)
@@ -43,20 +43,20 @@ colorTab = round(colorTab.*100)/100;
 % Comment these in as needed to override detEdit defaults
 
 spParamsUser.ltsaLims = [0,100]; % min and max ylimits in kHz for ltsa plot
-spParamsUser.ltsaMax = 6; % ltsa maximum duration per session
+spParamsUser.ltsaMax = 3; % ltsa maximum duration per session
 spParamsUser.tfSelect = 0; % freq used for transfer function, leave at 0 if no adjustment
 % spParamsUser.specChar = 'Unk';  %Simone abbreviation for species
-spParamsUser.speName = '';  % Species code used in file names 
+% spParamsUser.speName = 'Pm';  % Species code used in file names 
 % spParamsUser.dtHi = .3; % max yaxis value for IPI display in sec
-% spParamsUser.fLow = 5; % Minimum frequency of interest in kHz
-% spParamsUser.fHi = 10;%  Maximum frequency of interest in kHz
+spParamsUser.fLow = 5; % Minimum frequency of interest in kHz
+spParamsUser.fHi = 100;%  Maximum frequency of interest in kHz
 
 % spParamsUser.threshRL = 0; % minimum RL threshold in dB peak-to-peak
 % spParamsUser.threshRMS = 126; % RMS threshold cutoff
 % spParamsUser.threshHiFreq = 30; % high freq cutoff for clicks
 % spParamsUser.ltsaContrast = 116; % ltsa contrast
 % spParamsUser.ltsaBright = 55; % ltsa brightness
-% % spParamsUser.ltsaLims = [0,100]; % max and min of LTSA plot
+% spParamsUser.ltsaLims = [0,100]; % max and min of LTSA plot
 % spParamsUser.rlLow = 115; % PP plot window low limit
 % spParamsUser.rlHi = 165; % PP plot window high limit
 % spParamsUser.dfManual = []; % LTSA step size in 10 [Hz] bins

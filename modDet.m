@@ -36,6 +36,8 @@ while n <= length(varargin)
             getParams = varargin{n+1}; n=n+2;
         case 'tfName'
             tfName = varargin{n+1}; n=n+2;
+        case 'excludeID'
+            excludeID = varargin{n+1}; n=n+2;
         otherwise
             error('Bad optional argument: "%s"', varargin{n});
     end
@@ -105,16 +107,19 @@ RL0 = []; RL1 = [];
 SN0 = []; SN1 = [];
 SP0 = []; SP1 = [];
 
-% define original detection files
-DT0 = MTT;
-RL0 = MPP;
-SN0 = MSN;
-SP0 = MSP;
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% remove low amplitude (if threshold is changed)
+ib = find(MPP >= p.threshRL);
+disp([' Removed too low:',num2str(length(MPP)-length(ib))]);
+DT0 = MTT(ib);
+RL0 = MPP(ib);
+SN0 = MSN(ib,:);
+SP0 = MSP(ib,:);
 
 % empty variables to fill later with modified detections
 MTT = []; MPP = []; MSN = [];  MSP = [];
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%    
 % False Detections
 zFDfn = strrep(detfn,inTPWS,['FD',itnum]);
 load(fullfile(sdir,zFDfn)) % false detections vector : zFD
@@ -125,14 +130,22 @@ load(fullfile(sdir,zFDfn)) % false detections vector : zFD
 RL1 = RL0(IA);
 SN1 = SN0(IA,:);
 SP1 = SP0(IA,:);
-disp(['Number of Starting Detections = ',num2str(length(DT0))]);
-disp(['Number of Final Detections = ',num2str(length(DT1))]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % ID Detections
-zFDfn = strrep(detfn,inTPWS,['ID',itnum]);
-load(fullfile(sdir,zFDfn)) % false detections vector : zFD
+zIDfn = strrep(detfn,inTPWS,['ID',itnum]);
+load(fullfile(sdir,zIDfn)) % ID detections vector : zID
 
+% remove ID detections if specified
+if excludeID
+    [DT1,IB] = setdiff(DT1,zID); % setdiff already sorts the data
+    RL1 = RL1(IB);
+    SN1 = SN1(IB,:);
+    SP1 = SP1(IB,:);
+end
+
+disp(['Number of Starting Detections = ',num2str(length(DT0))]);
+disp(['Number of Final Detections = ',num2str(length(DT1))]);
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % save modified detection to output file
 outFileTPWS = strrep(detfn,inTPWS,outTPWS);
@@ -149,6 +162,10 @@ end
 
 % check if there is at least one encounter longer than 75s, if not
 % do not store TPWS file
+disp(['Save ',fullfile(outDir,outFileID)])
+save(fullfile(outDir,outFileID),'zID','-v7.3')
+disp('Done Modifying File')
+        
 if ~ isempty(MTT)
     dt = diff(MTT)*secInDay;
     I = find(dt>p.gth*60*60);
@@ -165,14 +182,11 @@ if ~ isempty(MTT)
             warning('no frequency vector available')
             save(fullfile(outDir,outFileTPWS),'MTT','MPP','MSN','MSP','-v7.3')
         end
-        disp(['Save ',fullfile(outDir,outFileID)])
-        save(fullfile(outDir,outFileID),'zID','-v7.3')
-        disp('Done Modifying File')
         
         % Calculate parameters and make figure if specified by user in itr_modDet
         switch getParams
             case 'ici&pp'
-                Calicippfunc(MTT,MPP,filePrefix,sp,outDir,outFileTPWS,p)
+                Calicippfunc(MTT,MPP,MSP,outDir,outFileTPWS,p,srate)
             case 'all'
                 CalPARAMSfunc(MTT,MPP',MSN,filePrefix,sp,outDir,outFileTPWS,p,tf,srate)
             case 'none'

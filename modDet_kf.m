@@ -15,23 +15,23 @@
 % from analyst input :
 % FD = false detections times (eg ships, others species)
 %
-clearvars
+clear all
 % thres = 116;  % detection threshold 116 dB
 % get user input and set up file names
-inDir = 'F:\GOM_clickTypePaper_detections\TPWS\MP01_02_TPWS';
-outDir = 'F:\GOM_clickTypePaper_detections\TPWS2\MP01_02_TPWS';
+inDir = 'I:\MC\MC01_TPWS';
+outDir = 'I:\MC\MC01_TPWS2';
 if ~isdir(outDir)
     mkdir(outDir)
 end
 fList = dir(fullfile(inDir,'*TPWS1.mat'));
 itnumo = 2;
 cd(inDir);
-%iciMin = 0.02; iciMax = .35;
+iciMin = 0.02; iciMax = .35;
 thres = 120; % dB threshold
 for iFile = 1:length(fList)
     inFile = fList(iFile).name;
     load(inFile)
-
+    
     % detection file
     [DT0,ia,ic] = unique(MTT);
     disp([' non-unique removed: ',num2str(length(ic)- length(ia))]);

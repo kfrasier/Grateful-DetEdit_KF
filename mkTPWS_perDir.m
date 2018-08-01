@@ -15,9 +15,9 @@
 clearvars
 
 % Setup variables:
-baseDir = 'G:\NFC_A_02_d4-6\Dolphins'; % directory containing de_detector output
-outDir = 'G:\NFC_A_02_d4-6_TPWS'; % directory where you want to save your TPWS file
-siteName = 'NFC_A_02'; % site name, used to name the output file
+baseDir = 'D:\DTmetadata\DT_postDecompFix\DT08'; % directory containing de_detector output
+outDir = 'D:\DTmetadata\DT_postDecompFix\LTSAs'; % directory where you want to save your TPWS file
+siteName = 'GofMX_DT08'; % site name, used to name the output file
 ppThresh = 120; % minimum RL in dBpp. If detections have RL below this
 % threshold, they will be excluded from the output file. Useful if you have
 % an unmanageable number of detections.
@@ -44,20 +44,17 @@ for itr0 = 1:length(dirSet)
         ppSignalVec = [];
         specClickTfVec = [];
         tsVecStore = [];
-        subTP = 13;
+        subTP = 1;
 
         for itr2 = 1:lfs
             thisFile = fileSet.mat(itr2);
             
             load(char(fullfile(inDir,thisFile)),'-mat','clickTimes','hdr',...
-                'ppSignal','specClickTf','yFiltBuff','f')
+                'ppSignal','specClickTf','yFiltBuff','f','durClick')
             if ~isempty(clickTimes)&& size(specClickTf,2)>1
                 % specClickTf = specClickTfHR;
-                [~,maxIdx] = max(specClickTf,[],2);
-                peakFr = f(maxIdx);
-                keepersA = find(ppSignal >= ppThresh);
-                keepersB = find(peakFr > 12);
-                keepers = intersect(keepersA, keepersB);
+                keepers = find(ppSignal >= ppThresh);
+                
                 ppSignal = ppSignal(keepers);
                 clickTimes = clickTimes(keepers,:);
                 
@@ -71,7 +68,7 @@ for itr0 = 1:length(dirSet)
                     datenum([2000,0,0,0,0,0]);
                 clickTimesVec = [clickTimesVec; posDnum];
                 ppSignalVec = [ppSignalVec; ppSignal];
-                tsWin = 300;
+                tsWin = 200;
                 tsVec = zeros(length(keepers),tsWin);
                 for iTS = 1:length(keepers(keepers2))
                     thisClick = yFiltBuff{keepers(keepers2(iTS))};
@@ -80,9 +77,6 @@ for itr0 = 1:length(dirSet)
                     % f = fHR;
                     if isempty(fSave)
                         fSave = f;
-                    end
-                    if isempty(f)
-                        f = fSave;
                     end
                     dTs = (tsWin/2) - maxIdx; % which is bigger, the time series or the window?
                     dTe =  (tsWin/2)- (length(thisClick)-maxIdx); % is the length after the peak bigger than the window?
@@ -123,7 +117,7 @@ for itr0 = 1:length(dirSet)
             end
             fprintf('Done with file %d of %d \n',itr2,lfs)
             
-            if (size(clickTimesVec,1)>= 1500000 && (lfs-itr2>=10))|| itr2 == lfs
+            if (size(clickTimesVec,1)>= 1800000 && (lfs-itr2>=10))|| itr2 == lfs
                 
                 MSN = tsVecStore;
                 MTT = clickTimesVec;

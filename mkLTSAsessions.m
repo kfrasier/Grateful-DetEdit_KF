@@ -42,11 +42,11 @@ end
 % ltsa file for GOM are named with GofMX and without underscore, and tf as
 % well.
 % E.g. GOM_DT_09 -> ltsa is GofMX_DT09
-% if findstr(detfn,'GOM')
-%     unscores = strfind(filePrefix,'_');
-%     filePrefix(unscores(2)) = '';
-%     filePrefix = regexprep(filePrefix,'GOM','GofMX');
-% end
+if findstr(detfn,'GOM')
+    unscores = strfind(filePrefix,'_');
+    filePrefix(unscores(2)) = '';
+    filePrefix = regexprep(filePrefix,'GOM','GofMX');
+end
 %% Load Settings preferences
 % Get parameter settings worked out between user preferences, defaults, and
 % species-specific settings:
@@ -125,17 +125,17 @@ doff = datenum([2000 0 0 0 0 0]);   % convert ltsa time to millenium time
 % make the variables that hold the ltsa header info persistent, in case
 % you are running itr_mkLTSA.m, this way you don't have to read the header
 % info every time.
-global sTime eTime rfTime hdr
+global sTime eTime rfTime
 
 if isempty(sTime)
     if nltsas > 0
         sTime = zeros(nltsas,1); eTime = zeros(nltsas,1);
         disp('reading ltsa headers, please be patient ...')
         for k = 1:nltsas
-            hdr{k} = ioReadLTSAHeader(fullfile(lpn,fnames(k,:)));
-            sTime(k) = hdr{k}.ltsa.start.dnum + doff;  % start time of ltsa files
-            eTime(k) = hdr{k}.ltsa.end.dnum + doff;    % end time of ltsa files
-            rfTime{k} = hdr{k}.ltsa.dnumStart + doff; % all rawfiles times for all ltsas
+            hdr = ioReadLTSAHeader(fullfile(lpn,fnames(k,:)));
+            sTime(k) = hdr.ltsa.start.dnum + doff;  % start time of ltsa files
+            eTime(k) = hdr.ltsa.end.dnum + doff;    % end time of ltsa files
+            rfTime{k} = hdr.ltsa.dnumStart + doff; % all rawfiles times for all ltsas
         end
         disp('done reading ltsa headers')
     else
@@ -238,18 +238,18 @@ while (k <= nb)
         if ~isempty(L)
             L = [L(1)-1,L]; % get rawfile from before sb(k)
             % grab the ltsa pwr matrix to plot
-            %hdr = ioReadLTSAHeader(fullfile(lpn,fnames(K,:))); % get some stuff we'll need
-            nbin = length(L) * hdr{K}.ltsa.nave(L(1));    % number of time bins to get
-            fid = fopen(fullfile(hdr{K}.ltsa.inpath,hdr{K}.ltsa.infile),'r');
+            hdr = ioReadLTSAHeader(fullfile(lpn,fnames(K,:))); % get some stuff we'll need
+            nbin = length(L) * hdr.ltsa.nave(L(1));    % number of time bins to get
+            fid = fopen(fullfile(hdr.ltsa.inpath,hdr.ltsa.infile),'r');
             % samples to skip over in ltsa file
-            skip = hdr{K}.ltsa.byteloc(L(1));
+            skip = hdr.ltsa.byteloc(L(1));
             fseek(fid,skip,-1);    % skip over header + other data
-            pwr{k} = fread(fid,[hdr{K}.ltsa.nf,nbin],'int8');   % read data
+            pwr{k} = fread(fid,[hdr.ltsa.nf,nbin],'int8');   % read data
             fclose(fid);
             % make time vector
             t1 = rfTime{K}(L(1));
             dt = datenum([0 0 0 0 0 5]);
-            [ pt{k}, pwr{k} ] = padLTSAGaps(hdr{K}, L,pwr{k});
+            [ pt{k}, pwr{k} ] = padLTSAGaps(hdr, L,pwr{k});
             %   pt{k} = [t1:dt:t1 + (nbin-1)*dt]; % does not account for duty
             %   cycle
         else
@@ -283,13 +283,13 @@ while (k <= nb)
         if ~isempty(Ls)
             Ls = [Ls(1)-1,Ls]; % get rawfile from before sb(k)
             % grab the ltsa pwr matrix to plot
-            % hdr = ioReadLTSAHeader(fullfile(lpn,fnames(Ks,:))); % get some stuff we'll need
-            nbin = length(Ls) * hdr{K}.ltsa.nave(Ls(1));    % number of time bins to get
-            fid = fopen(fullfile(hdr{K}.ltsa.inpath,hdr{K}.ltsa.infile),'r');
+            hdr = ioReadLTSAHeader(fullfile(lpn,fnames(Ks,:))); % get some stuff we'll need
+            nbin = length(Ls) * hdr.ltsa.nave(Ls(1));    % number of time bins to get
+            fid = fopen(fullfile(hdr.ltsa.inpath,hdr.ltsa.infile),'r');
             % samples to skip over in ltsa file
-            skip = hdr{K}.ltsa.byteloc(Ls(1));
+            skip = hdr.ltsa.byteloc(Ls(1));
             fseek(fid,skip,-1);    % skip over header + other data
-            pwrLs = fread(fid,[hdr{K}.ltsa.nf,nbin],'int8');   % read data
+            pwrLs = fread(fid,[hdr.ltsa.nf,nbin],'int8');   % read data
             fclose(fid);
             % make time vector
             t1 = rfTime{Ks}(Ls(1));
@@ -298,13 +298,13 @@ while (k <= nb)
         end
         if ~isempty(Le)
             % grab the ltsa pwr matrix to plot
-            % hdr = ioReadLTSAHeader(fullfile(lpn,fnames(Ke,:))); % get some stuff we'll need
-            nbin = length(Le) * hdr{K}.ltsa.nave(Le(1));    % number of time bins to get
-            fid = fopen(fullfile(hdr{K}.ltsa.inpath,hdr{K}.ltsa.infile),'r');
+            hdr = ioReadLTSAHeader(fullfile(lpn,fnames(Ke,:))); % get some stuff we'll need
+            nbin = length(Le) * hdr.ltsa.nave(Le(1));    % number of time bins to get
+            fid = fopen(fullfile(hdr.ltsa.inpath,hdr.ltsa.infile),'r');
             % samples to skip over in ltsa file
-            skip = hdr{K}.ltsa.byteloc(Le(1));
+            skip = hdr.ltsa.byteloc(Le(1));
             fseek(fid,skip,-1);    % skip over header + other data
-            pwrLe = fread(fid,[hdr{K}.ltsa.nf,nbin],'int8');   % read data
+            pwrLe = fread(fid,[hdr.ltsa.nf,nbin],'int8');   % read data
             fclose(fid);
             % make time vector
             t1 = rfTime{Ke}(Le(1));
@@ -394,13 +394,7 @@ if size(rfDurs, 2) > 1
             numaves2pad = ceil(tdt/hdr.ltsa.tave);
             pwrpad = ones(nfreq,numaves2pad).*-128;
             gaveidx = length(pt); % last average before gap
-            if size(pwr,2)<gaveidx
-                padSize = gaveidx - size(pwr,2);
-                pwrpad = ones(nfreq,padSize).*-128;
-                pwr = [pwr, pwrpad];
-            else
-                pwr = [ pwr(:,1:gaveidx), pwrpad, pwr(:,gaveidx+1:end)];
-            end
+            pwr = [ pwr(:,1:gaveidx), pwrpad, pwr(:,gaveidx+1:end)];
             padavetimes = pt(end)+dt_dnum:dt_dnum:rfStarts(rf)-dt_dnum;
             pt = [ pt, padavetimes ];
         end
