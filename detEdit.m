@@ -413,7 +413,6 @@ if (size(zTD,2) == 2) % this seems to patch on extra columns
 end
 %% Main Loop
 % loop over the number of bouts (sessions)
-onerun = 1; % What does this do?
 
 while (k <= nb)
     disp([' BEGIN SESSION: ',num2str(k)]);
@@ -726,16 +725,6 @@ while (k <= nb)
         
         if ~loadMSP % plot threshold line now because no background data
             if (p.threshRMS > 0)
-                if onerun == 1
-                    if p.threshPP > 0
-                        badClickTime = t(pxmsp < p.threshRMS &...
-                            xmpp' < p.threshPP);  % for all false if below RMS threshold
-                    else
-                        badClickTime = t(pxmsp < p.threshRMS);
-                    end
-                    disp(['Number of Detections Below RMS threshold = ',num2str(length(badClickTime))])
-                    zFD = [zFD; badClickTime];   % cummulative False Detection matrix
-                    save(fnameFD,'zFD')
                     if ~isempty(zFD) % get times and indices of false detections
                         [tfd,K2,~] = intersect(t,zFD(:,1));
                         rlFD = RL(K2);
@@ -752,16 +741,8 @@ while (k <= nb)
                         ff2 = 0;
                         disp(' No False Detections')
                     end
-                end
+                
             end
-            if p.threshPP > 0 && exist('plotaxes','var')
-                xtline = [p.threshRMS,p.threshRMS]; ytline = [ plotaxes.minPP,p.threshPP];
-            elseif p.threshPP > 0
-                xtline = [p.threshRMS,p.threshRMS]; ytline = [ min(xmpp),p.threshPP];
-            else
-                xtline = [p.threshRMS,p.threshRMS]; ytline = [ min(xmpp),max(xmpp)];
-            end
-            plot(h51,xtline,ytline,'r')
         end
         
         if ff2 % false in red
@@ -784,12 +765,7 @@ while (k <= nb)
         freq = fmsp(im + fimint -1);
         plot(h53,pxmsp,freq,'.b','UserData',t) % true ones in blue
         if ~loadMSP
-            if onerun == 1
                 if (p.threshHiFreq > 0)
-                    badClickTime = t(freq > p.threshHiFreq);  % for all false if below RMS threshold
-                    disp(['Number of Detections Below Freq threshold = ',num2str(length(badClickTime))])
-                    zFD = [zFD; badClickTime];   % cummulative False Detection matrix
-                    save(fnameFD,'zFD')
                     if ~isempty(zFD) % get times and indices of false detections
                         [tfd,K2,~] = intersect(t,zFD(:,1));
                         rlFD = RL(K2);
@@ -807,13 +783,7 @@ while (k <= nb)
                         disp(' No False Detections')
                     end
                 end
-            end
-            if p.threshHiFreq > 0 && exist('plotaxes','var')
-                xtline = [plotaxes.minRMS,plotaxes.maxRMS]; ytline = [p.threshHiFreq ,p.threshHiFreq];
-            elseif p.threshHiFreq > 0
-                xtline = [min(pxmsp),max(pxmsp)]; ytline = [p.threshHiFreq ,p.threshHiFreq];
-            end
-            plot(h53,xtline,ytline,'r')
+           
         end
         if ff2 % false in red
             plot(h53,pxmsp(K2),freq(K2),'r.','UserData',t(K2))
@@ -1015,7 +985,6 @@ while (k <= nb)
         % need a better solution.
     pause  % wait for user input.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    onerun = onerun+1;
     cc = get(gcf,'CurrentCharacter');
     % get key stroke
     if strcmp(cc,'u') || strcmp(cc,'g') || strcmp(cc,'y') || ...
@@ -1086,7 +1055,6 @@ while (k <= nb)
         if k ~= 1
             k = k-1;
         end
-        onerun = 1;
     elseif strcmp(cc,'f') % assign ALL as false
         disp(['Number of False Detections Added = ',num2str(length(trueTimes))])
         if ~isempty(zID)
@@ -1132,7 +1100,6 @@ while (k <= nb)
         if (kjump > 0 && kjump < nb)
             k = kjump;
         end
-        onerun = 1;
         
 %     elseif strcmp(cc,'z'); % test click for random False Detect
 %         if ~isempty(XFD)
@@ -1192,7 +1159,6 @@ while (k <= nb)
 %         
     else
         k = k+1;  % move forward one bout
-        onerun = 1;
     end
     
     % after edits, remove duplicate labels and save updated vectors
