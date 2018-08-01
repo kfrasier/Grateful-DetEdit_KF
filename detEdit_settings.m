@@ -27,14 +27,14 @@ sdir = 'F:\MC\GOM_MC_Metadata\TPWS'; %Directory with TPWS files
 
 % Colors to use for classification
 colorTab = [255, 153, 200; ... % type 1 pink
-    218, 179, 255; ... % type 2 purple
+    122,  15, 227; ... % type 2 dark purple
+    174, 235, 255; ... % type 3 pale-blue
+    0, 255, 255; ... % type 4 cyan
+    255, 177, 100; ... % type 5 peach
+    255,   0, 255; ... % type 6 magenta
+    20,  43, 140; ... % type 7 dark blue
+    218, 179, 255; ... % type 2 purple    
     179, 200, 255; ... % type 3 light-blue
-    174, 235, 255; ... % type 4 pale-blue
-    0, 255, 255; ... % type 5 cyan
-    255, 177, 100; ... % type 6 peach
-    255,   0, 255; ... % type 7 magenta
-    122,  15, 227; ... % type 8 purple
-    20,  43, 140; ... % type 9 dark blue
     221, 125,   0]./255; % type 10  orange
 colorTab = round(colorTab.*100)/100;
 
