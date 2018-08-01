@@ -454,51 +454,12 @@ while (k <= nb)
         end
         plot(h51,pxmspAll,xmppAll,'o','MarkerEdgeColor',[.7,.7,.7],'UserData',clickTimes)
         title(h51,['Based on ',num2str(length(xmppAll)),' clicks']);
-        
-        % apply RMS threshold to figure (51)
-        if (p.threshRMS > 0)
-            if onerun == 1
-                if p.threshPP > 0
-                    badClickTime = clickTimes(pxmspAll < p.threshRMS &...
-                        xmppAll' < p.threshPP);  % for all false if below RMS threshold
-                else
-                    badClickTime = clickTimes(pxmspAll < p.threshRMS);
-                end
-                disp(['Number of Detections Below RMS threshold = ',num2str(length(badClickTime))])
-                zFD = [zFD; badClickTime];   % cummulative False Detection matrix
-                save(fnameFD,'zFD')
-            end
-            if p.threshPP > 0
-                xtline = [p.threshRMS,p.threshRMS]; ytline = [ min(xmppAll),p.threshPP];
-            else
-                xtline = [p.threshRMS,p.threshRMS]; ytline = [ min(xmppAll),max(xmppAll)];
-            end
-            hold(h51,'on');
-            plot(h51,xtline,ytline,'r')
-            hold(h51,'off');
-            %p.threshRMS = 0;
-        end
-        
+                
         % plot RMS vs frequency plot, keeping RMS vertical like in fig(51)
         freqAll = fmsp(im + fimint-1);
         plot(h53,pxmspAll,freqAll,'o','MarkerEdgeColor',[.7,.7,.7],'UserData',clickTimes)
         title(h53,['Based on total of ',num2str(length(freqAll)),' clicks']);
-        % apply High Frequency threshold to figure (53)
-        if onerun == 1
-            if (p.threshHiFreq > 0)
-                badClickTime = clickTimes(freqAll > p.threshHiFreq);  % for all false if below RMS threshold
-                disp(['Number of Detections Below Freq threshold = ',num2str(length(badClickTime))])
-                zFD = [zFD; badClickTime];   % cummulative False Detection matrix
-                save(fnameFD,'zFD')
-                %p.threshHiFreq = 0;
-            end
-        end
-        if (p.threshHiFreq > 0)
-            xtline = [min(pxmspAll),max(pxmspAll)]; ytline = [p.threshHiFreq ,p.threshHiFreq];
-            hold(h53,'on');
-            plot(h53,xtline,ytline,'r')
-            hold(h53,'off');
-        end
+
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % find detections and false detections within this bout (session)
@@ -1109,17 +1070,17 @@ while (k <= nb)
         p.ltsaContrast = input(sprintf('  Current Contrast %d. Update Contrast:  ',p.ltsaContrast));
         p.ltsaBright = input(sprintf('  Current Brightness %d. Update Brightness:  ',p.ltsaBright));
         
-    elseif strcmp(cc,'<') % change RMS threshold plot 51
-        p.threshRMS = input(' Set RMS Threshold:  '); % Set false thres
-        
-    elseif strcmp(cc,':') % change RMS threshold plot 51
-        p.threshPP = input(' Set PP Threshold:  '); % Set false thres
-        
-    elseif strcmp(cc,'^') % change High Frequency threshold plot 51
-        p.threshHiFreq = input(' Set High Frequency Threshold:  '); % Set false thres
-        
-    elseif strcmp(cc,'!') % change High Frequency threshold plot 51
-        ymax = input(' Update High Frequency axis:  '); % Set false thres
+%     elseif strcmp(cc,'<') % change RMS threshold plot 51
+%         p.threshRMS = input(' Set RMS Threshold:  '); % Set false thres
+%         
+%     elseif strcmp(cc,':') % change RMS threshold plot 51
+%         p.threshPP = input(' Set PP Threshold:  '); % Set false thres
+%         
+%     elseif strcmp(cc,'^') % change High Frequency threshold plot 51
+%         p.threshHiFreq = input(' Set High Frequency Threshold:  '); % Set false thres
+%         
+%     elseif strcmp(cc,'!') % change High Frequency threshold plot 51
+%         ymax = input(' Update High Frequency axis:  '); % Set false thres
         
     elseif strcmp(cc,'b') % Move backward one bout
         if k ~= 1
@@ -1153,18 +1114,18 @@ while (k <= nb)
             [~,iCMD] = setdiff(zMD(:,1),t); % remove from zMD
             zMD = zMD(iCMD,:);
         end
-    elseif strcmp(cc,'m')% assign ALL as mis-ID
-        disp(['Number of mis-ID Detections Added = ',num2str(length(t))])
-        if ~isempty(zID) % remove these times from FD and ID
-            [~,iCID] = setdiff(zID(:,1),t); % remove from zID
-            zID = zID(iCID,:);
-        end
-        if ~isempty(zFD)
-            [~,iCFD] = setdiff(zFD,t); % remove from zFD
-            zFD = zFD(iCFD,:);
-        end
-        zMD = [zMD; t];
-        
+%     elseif strcmp(cc,'m')% assign ALL as mis-ID
+%         disp(['Number of mis-ID Detections Added = ',num2str(length(t))])
+%         if ~isempty(zID) % remove these times from FD and ID
+%             [~,iCID] = setdiff(zID(:,1),t); % remove from zID
+%             zID = zID(iCID,:);
+%         end
+%         if ~isempty(zFD)
+%             [~,iCFD] = setdiff(zFD,t); % remove from zFD
+%             zFD = zFD(iCFD,:);
+%         end
+%         zMD = [zMD; t];
+%         
     elseif strcmp(cc,'j')% jump to non-consecutive session
         prompt = 'Jump to Session: ';
         kjump = input(prompt);
@@ -1173,62 +1134,62 @@ while (k <= nb)
         end
         onerun = 1;
         
-    elseif (strcmp(cc,'x') || strcmp(cc,'z') ); % test click for random False Detect
-        if ~isempty(XFD)
-            zTD(k,2) = 0;
-            for inxfd = 1 : zTD(k,1)
-                axes(hA201(1))
-                hold on
-                testTimes = xt(inxfd);
-                plot(testTimes,xPP(inxfd),'ro','MarkerSize',10);
-                hold off
-                disp(['Showing #: ',num2str(inxfd),' click. Press ''z'' to reject']);
-                if (specploton == 1)
-                    hold(h50,'on')  % add click to spec plot in BLACK
-                    plot(h50,ft,trueSpec,'Linewidth',2);
-                    clickInBoutIdx = find(t==testTimes);
-                    testSnip = csnJtrue(clickInBoutIdx,:);
-                    testSpectrum = cspJtrue(clickInBoutIdx,:);
-                    
-                    
-                    % make low freq part = 0
-                    tempSPEC = norm_spec_simple(testSpectrum,fimint,fimaxt);
-                    xH0 = plot(h50,ft,tempSPEC,'k','Linewidth',4);
-                    hold(h50,'off')
-                    
-                    hold(h52,'on') % add click to waveform plot in BLACK
-                    xH2 = plot(h52,norm_wav(testSnip)' + 1.5,'k');
-                    hold(h52,'off')
-                    
-                    hold(h51,'on')
-                    % get click index relative to bout
-                    xH1 = plot(h51,pxmsp(clickInBoutIdx),xmpp(clickInBoutIdx),'ro','MarkerSize',10,...
-                        'LineWidth',2);
-                    hold(h51,'off')
-                    
-                    hold(h53,'on')
-                    xH3 = plot(h53,pxmsp(clickInBoutIdx),freq(clickInBoutIdx),'ro','MarkerSize',10,...
-                        'LineWidth',2);
-                    hold(h53,'off')
-                end
-                pause
-                cc = get(gcf,'CurrentCharacter');
-                if (strcmp(cc,'z'))
-                    zTD(k,2) = zTD(k,2) + 1;
-                    zFD = [zFD; xt(inxfd)]; % add to FD
-                end
-                delete([xH0,xH1,xH2,xH3])
-            end
-            disp([' Tested: ',num2str(zTD(k,1)),' False: ',...
-                num2str(zTD(k,2))]);
-            
-        end
-        k = k+1;
-    elseif (strcmp(cc,'w') && (zTD(k,2) > 0));  % test 5 min window
-        % Test 5 min window
-        zTD = test_false_bins(k,zTD,xt,xPP,binCX);
-        k = k+1;
-        
+%     elseif strcmp(cc,'z'); % test click for random False Detect
+%         if ~isempty(XFD)
+%             zTD(k,2) = 0;
+%             for inxfd = 1 : zTD(k,1)
+%                 axes(hA201(1))
+%                 hold on
+%                 testTimes = xt(inxfd);
+%                 plot(testTimes,xPP(inxfd),'ro','MarkerSize',10);
+%                 hold off
+%                 disp(['Showing #: ',num2str(inxfd),' click. Press ''z'' to reject']);
+%                 if (specploton == 1)
+%                     hold(h50,'on')  % add click to spec plot in BLACK
+%                     plot(h50,ft,trueSpec,'Linewidth',2);
+%                     clickInBoutIdx = find(t==testTimes);
+%                     testSnip = csnJtrue(clickInBoutIdx,:);
+%                     testSpectrum = cspJtrue(clickInBoutIdx,:);
+%                     
+%                     
+%                     % make low freq part = 0
+%                     tempSPEC = norm_spec_simple(testSpectrum,fimint,fimaxt);
+%                     xH0 = plot(h50,ft,tempSPEC,'k','Linewidth',4);
+%                     hold(h50,'off')
+%                     
+%                     hold(h52,'on') % add click to waveform plot in BLACK
+%                     xH2 = plot(h52,norm_wav(testSnip)' + 1.5,'k');
+%                     hold(h52,'off')
+%                     
+%                     hold(h51,'on')
+%                     % get click index relative to bout
+%                     xH1 = plot(h51,pxmsp(clickInBoutIdx),xmpp(clickInBoutIdx),'ro','MarkerSize',10,...
+%                         'LineWidth',2);
+%                     hold(h51,'off')
+%                     
+%                     hold(h53,'on')
+%                     xH3 = plot(h53,pxmsp(clickInBoutIdx),freq(clickInBoutIdx),'ro','MarkerSize',10,...
+%                         'LineWidth',2);
+%                     hold(h53,'off')
+%                 end
+%                 pause
+%                 cc = get(gcf,'CurrentCharacter');
+%                 if (strcmp(cc,'z'))
+%                     zTD(k,2) = zTD(k,2) + 1;
+%                     zFD = [zFD; xt(inxfd)]; % add to FD
+%                 end
+%                 delete([xH0,xH1,xH2,xH3])
+%             end
+%             disp([' Tested: ',num2str(zTD(k,1)),' False: ',...
+%                 num2str(zTD(k,2))]);
+%             
+%         end
+%         k = k+1;
+%     elseif (strcmp(cc,'w') && (zTD(k,2) > 0));  % test 5 min window
+%         % Test 5 min window
+%         zTD = test_false_bins(k,zTD,xt,xPP,binCX);
+%         k = k+1;
+%         
     else
         k = k+1;  % move forward one bout
         onerun = 1;
@@ -1240,6 +1201,9 @@ while (k <= nb)
     end
     if ~isempty(zID)
         [~,uniqueID] = unique(zID(:,1));
+        if length(uniqueID)<length(zID)
+            1;
+        end
         zID = zID(uniqueID,:);
     end
     if ~isempty(zMD)

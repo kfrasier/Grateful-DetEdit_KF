@@ -9,7 +9,7 @@
 % Then change line 22 of detEdit to match the settings file you want to
 % use.
 
-filePrefix = 'GofMX_MC01_disk06'; % File name to match. 
+filePrefix = 'GofMX_MC01_disk10'; % File name to match. 
 % File prefix should include deployment, site, (disk is optional). 
 % Example: 
 % File name 'GofMX_DT01_disk01-08_TPWS2.mat' 

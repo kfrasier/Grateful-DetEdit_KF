@@ -34,7 +34,7 @@ set(groot,'defaultAxesColorOrder',co)
 
 spParams = [];
 specChar = 'Unk';  %Simone abbreviation for species
-speName = 'Unknown';  % Species code used in file names 
+speName = '';  % Species code used in file names 
 tfSelect = 0; % freq used for transfer function, leave at 0 if no adjustment
 dtHi = .5; % max yaxis value for IPI display in sec
 fLow = 0; % Minimum frequency of interest
