@@ -1076,19 +1076,26 @@ while (k <= nb)
         p.ltsaBright = input(sprintf('  Current Brightness %d. Update Brightness:  ',p.ltsaBright));
    
     elseif strcmp(cc,'x') % re-code one species ID with another
+        % detect if data have been brushed, otherwise use whole set.
+        [brushDate, brushColor] = get_brushed(gca); 
+        if isempty(brushDate)
+            tEdit = t;
+        else
+            tEdit = brushDate;
+        end
         oldID = input(' Enter the ID you want to overwrite:  '); % Set RL low
         newID  = input(' Enter the ID you want to change it to (enter 0 for no ID):  '); % Set RL low
         addFlag = 0; % flag gets turned to 1 if we have to append to zID rather than change existing IDs
         if oldID == 0 %get everything that's unlabeled
             addFlag = 1;
-            [dates2Append,~] = setdiff(t,[tfd;tID]);
+            [dates2Append,~] = setdiff(tEdit,[tfd;tID]);
             
         elseif oldID ==99 % get everything that's false
             addFlag = 1;
-            [dates2Append,iCFD] = intersect(zFD(:,1),t);
+            [dates2Append,iCFD] = intersect(zFD(:,1),tEdit);
             zFD(iCFD) = [];
         else
-            [~,iCID] = intersect(zID(:,1),t);
+            [~,iCID] = intersect(zID(:,1),tEdit);
             oldIDLocs = find(zID(iCID,2)==oldID);
         end
         
@@ -1141,8 +1148,10 @@ while (k <= nb)
         zFD = [zFD; newFD; trueTimes]; % Add everything to zFD
         
     elseif strcmp(cc,'t') %assign ALL as true
-        [zFD,~] = setdiff(zFD(:,1),t);
-        disp(['Remaining False Detections = ',num2str(length(zFD))])
+        if ~isempty(zFD)
+            [zFD,~] = setdiff(zFD(:,1),t);
+            disp(['Remaining False Detections = ',num2str(length(zFD))])
+        end
         if ~isempty(zID)
             [~,iCID] = setdiff(zID(:,1),t);
             zID = zID(iCID,:);
