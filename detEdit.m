@@ -1081,7 +1081,8 @@ while (k <= nb)
         if isempty(brushDate)
             tEdit = t;
         else
-            tEdit = brushDate;
+            tTemp = brushDate;
+            tEdit = intersect(tTemp,t);
         end
         oldID = input(' Enter the ID you want to overwrite:  '); % Set RL low
         newID  = input(' Enter the ID you want to change it to (enter 0 for no ID):  '); % Set RL low
