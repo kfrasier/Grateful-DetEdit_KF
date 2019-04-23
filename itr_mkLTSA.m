@@ -5,30 +5,30 @@
 
 clearvars
 clear global
-filePrefix = 'JAX_D_13'; % File name to match. 
+filePrefix = '2017_LowIsland'; % File name to match. 
 % File prefix should include deployment, site, (disk is optional). 
 % Example: 
 % File name 'GofMX_DT01_disk01-08_TPWS2.mat' 
 %                    -> filePrefix = 'GofMX_DT01'
 % or                 -> filePrefix ='GOM_DT_09' (for files names with GOM)
-sp = 'De'; % your species code
-itnum = '1'; % which iteration you are looking for
-srate = 200; % sample rate
-LTSApath = 'F:\JAX13D_broad_metadata\LTSA'; % directory containing all LTSAs for this deployment
+sp = 'Narwhal'; % your species code
+itnum = '2'; % which iteration you are looking for
+srate = 192; % sample rate
+LTSApath = 'E:\Data\Kelby\LTSA2017'; % directory containing all LTSAs for this deployment
 % LTSA folder should match the site specified in prefix
-tpwsPath = 'F:\JAX13D_broad_metadata\TPWS_noMinPeakFr'; %directory of TPWS files
+tpwsPath = 'E:\Data\Kelby'; %directory of TPWS files
 %tfName = 'E:\TF_files'; % Directory ...
 % with .tf files (directory containing folders with different series ...
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % define subfolder that fit specified iteration
-if itnum > 1
-   for id = 2: str2num(itnum); % iternate id times according to itnum
-       subfolder = ['TPWS',num2str(id)];
-       tpwsPath = (fullfile(tpwsPath,subfolder));
-   end
-end
+% if itnum > 1
+%    for id = 2: str2num(itnum); % iternate id times according to itnum
+%        subfolder = ['TPWS',num2str(id)];
+%        tpwsPath = (fullfile(tpwsPath,subfolder));
+%    end
+% end
 
 % Find all TPWS files that fit your specifications (does not look in subdirectories)
 % Concatenate parts of file name

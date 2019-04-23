@@ -42,11 +42,11 @@ end
 % ltsa file for GOM are named with GofMX and without underscore, and tf as
 % well.
 % E.g. GOM_DT_09 -> ltsa is GofMX_DT09
-if findstr(detfn,'GOM')
-    unscores = strfind(filePrefix,'_');
-    filePrefix(unscores(2)) = '';
-    filePrefix = regexprep(filePrefix,'GOM','GofMX');
-end
+% if findstr(detfn,'GOM')
+%     unscores = strfind(filePrefix,'_');
+%     filePrefix(unscores(2)) = '';
+%     filePrefix = regexprep(filePrefix,'GOM','GofMX');
+% end
 %% Load Settings preferences
 % Get parameter settings worked out between user preferences, defaults, and
 % species-specific settings:
@@ -125,17 +125,19 @@ doff = datenum([2000 0 0 0 0 0]);   % convert ltsa time to millenium time
 % make the variables that hold the ltsa header info persistent, in case
 % you are running itr_mkLTSA.m, this way you don't have to read the header
 % info every time.
-global sTime eTime rfTime
+global sTime eTime rfTime hdrStore
 
 if isempty(sTime)
     if nltsas > 0
+        hdrStore = {};
         sTime = zeros(nltsas,1); eTime = zeros(nltsas,1);
         disp('reading ltsa headers, please be patient ...')
         for k = 1:nltsas
-            hdr = ioReadLTSAHeader(fullfile(lpn,fnames(k,:)));
-            sTime(k) = hdr.ltsa.start.dnum + doff;  % start time of ltsa files
-            eTime(k) = hdr.ltsa.end.dnum + doff;    % end time of ltsa files
-            rfTime{k} = hdr.ltsa.dnumStart + doff; % all rawfiles times for all ltsas
+            hdrTemp = ioReadLTSAHeader(fullfile(lpn,fnames(k,:)));
+            sTime(k) = hdrTemp.ltsa.start.dnum + doff;  % start time of ltsa files
+            eTime(k) = hdrTemp.ltsa.end.dnum + doff;    % end time of ltsa files
+            rfTime{k} = hdrTemp.ltsa.dnumStart + doff; % all rawfiles times for all ltsas
+            hdrStore{k} = hdrTemp;
         end
         disp('done reading ltsa headers')
     else
@@ -229,17 +231,23 @@ while (k <= nb)
     K = find(sTime <= sb(k) & eTime >= eb(k));
     % find which rawfiles to plot ltsa
     if ~isempty(K) && length(K) == 1
-        L = [];
-        if eb(k) -sb(k) < 75/ (60*60*24)
+        % L = [];
+        % default is to assume that a bout is longer than a raw file, so try this:
+        L = find(rfTime{K} >= sb(k) & rfTime{K} <= eb(k)); 
+        
+        % If that didn't work, see if you can just use the first raw file
+        % that meets the timing criteria
+        rfLen = max(rfTime{K}(2:end)-rfTime{K}(1:end-1)); % can't assume you know raw file length!!
+        if isempty(L) && eb(k) - sb(k) < rfLen
             L = find(rfTime{K} >= sb(k),1,'first');
-        else
-            L = find(rfTime{K} >= sb(k) & rfTime{K} <= eb(k));
         end
+        
+        
         if ~isempty(L)
-            L = [L(1)-1,L]; % get rawfile from before sb(k)
+            L = [L(1)-1]%,L]; % get rawfile from before sb(k)
             % grab the ltsa pwr matrix to plot
-            hdr = ioReadLTSAHeader(fullfile(lpn,fnames(K,:))); % get some stuff we'll need
-            nbin = length(L) * hdr.ltsa.nave(L(1));    % number of time bins to get
+            hdr = hdrStore{K};%ioReadLTSAHeader(fullfile(lpn,fnames(K,:))); % get some stuff we'll need
+            nbin = sum(hdr.ltsa.nave(L));    % number of time bins to get
             fid = fopen(fullfile(hdr.ltsa.inpath,hdr.ltsa.infile),'r');
             % samples to skip over in ltsa file
             skip = hdr.ltsa.byteloc(L(1));
@@ -249,14 +257,17 @@ while (k <= nb)
             % make time vector
             t1 = rfTime{K}(L(1));
             dt = datenum([0 0 0 0 0 5]);
-            [ pt{k}, pwr{k} ] = padLTSAGaps(hdr, L,pwr{k});
+            pt{k} = [t1:dt:t1 + (nbin-1)*dt];
+
+%             dt = datenum([0 0 0 0 0 5]);
+%             [ pt{k}, pwr{k} ] = padLTSAGaps(hdr, L,pwr{k});
             %   pt{k} = [t1:dt:t1 + (nbin-1)*dt]; % does not account for duty
             %   cycle
         else
             rfT = rfTime{K};
             disp('L is empty')
-            pt{k} = [];
-            pwr{k} = [];
+            %pt{k} = [];
+            %pwr{k} = [];
             %             disp(datestr(rfT))
             disp(['bout start time is ',datestr(sb(k))])
             disp(['bout end time is ',datestr(eb(k))])
@@ -272,6 +283,8 @@ while (k <= nb)
         Ke = find(sTime <= eb(k) & eTime >= eb(k));
         if isempty(Ks) || isempty(Ke)
             disp('Error: Ks or Ke are empty')
+            pwr{k} = [];
+            pt{k} = [];
             k = k+1;
             continue
         end
@@ -283,7 +296,7 @@ while (k <= nb)
         if ~isempty(Ls)
             Ls = [Ls(1)-1,Ls]; % get rawfile from before sb(k)
             % grab the ltsa pwr matrix to plot
-            hdr = ioReadLTSAHeader(fullfile(lpn,fnames(Ks,:))); % get some stuff we'll need
+            hdr = hdrStore{K};%ioReadLTSAHeader(fullfile(lpn,fnames(Ks,:))); % get some stuff we'll need
             nbin = length(Ls) * hdr.ltsa.nave(Ls(1));    % number of time bins to get
             fid = fopen(fullfile(hdr.ltsa.inpath,hdr.ltsa.infile),'r');
             % samples to skip over in ltsa file
@@ -298,7 +311,7 @@ while (k <= nb)
         end
         if ~isempty(Le)
             % grab the ltsa pwr matrix to plot
-            hdr = ioReadLTSAHeader(fullfile(lpn,fnames(Ke,:))); % get some stuff we'll need
+            hdr =  hdrStore{K};% ioReadLTSAHeader(fullfile(lpn,fnames(Ke,:))); % get some stuff we'll need
             nbin = length(Le) * hdr.ltsa.nave(Le(1));    % number of time bins to get
             fid = fopen(fullfile(hdr.ltsa.inpath,hdr.ltsa.infile),'r');
             % samples to skip over in ltsa file

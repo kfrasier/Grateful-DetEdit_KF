@@ -67,13 +67,13 @@ for itr0 = 1%:length(dirSet)
             N = length(p.fftWindow);
             f = 0:((hdr.fs/2)/1000)/((N/2)):((hdr.fs/2)/1000);
             
-            lowSpecIdx = round(5000/hdr.fs*p.fftSize);
-            highSpecIdx = round(100000/hdr.fs*p.fftSize);
-            specRangeOld =  p.specRange;
-            p.specRange = lowSpecIdx:highSpecIdx;
+            %lowSpecIdx = round(5000/hdr.fs*p.fftSize);
+            %highSpecIdx = round(100000/hdr.fs*p.fftSize);
+            %specRangeOld =  p.specRange;
+            %p.specRange = lowSpecIdx:highSpecIdx;
             p.binWidth_Hz = hdr.fs / p.fftSize;
-            f = f(p.specRange);
-            p.xfrOffset = interp1(fOld,p.xfrOffset,f);
+            %f = f(p.specRange);
+            %p.xfrOffset = interp1(fOld,p.xfrOffset,f);
 
             % account for bin width
             sub = 10*log10(hdr.fs/N);

@@ -16,14 +16,15 @@ clearvars
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Load user input. Has to happen first so you know species.
-detEdit_settings
+detEdit_settings_kelby
+
 % define subfolder that fit specified iteration
-if itnum > 1
-   for id = 2: str2num(itnum); % iternate id times according to itnum
-       subfolder = ['TPWS',num2str(id)];
-       sdir = (fullfile(sdir,subfolder));
-   end
-end
+% if itnum > 1
+%    for id = 2: str2num(itnum); % iternate id times according to itnum
+%        subfolder = ['TPWS',num2str(id)];
+%        sdir = (fullfile(sdir,subfolder));
+%    end
+% end
 
 %% Load Settings preferences
 % Get parameter settings worked out between user preferences, defaults, and
@@ -1084,8 +1085,8 @@ while (k <= nb)
             tTemp = brushDate;
             tEdit = intersect(tTemp,t);
         end
-        oldID = input(' Enter the ID you want to overwrite:  '); % Set RL low
-        newID  = input(' Enter the ID you want to change it to (enter 0 for no ID):  '); % Set RL low
+        oldID = input(' Enter the ID you want to overwrite:  '); 
+        newID  = input(' Enter the ID you want to change it to (enter 0 for no ID):  ');
         addFlag = 0; % flag gets turned to 1 if we have to append to zID rather than change existing IDs
         if oldID == 0 %get everything that's unlabeled
             addFlag = 1;

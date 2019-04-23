@@ -9,18 +9,18 @@
 % Then change line 22 of detEdit to match the settings file you want to
 % use.
 
-filePrefix = 'GofMX_MC04_disk01'; % File name to match. 
+filePrefix = '2017_LowIsland'; % File name to match. 
 % File prefix should include deployment, site, (disk is optional). 
 % Example: 
 % File name 'GofMX_DT01_disk01-08_TPWS2.mat' 
 %                    -> filePrefix = 'GofMX_DT01_disk01-08'
 itnum = '1'; % iteration
-srate = 200; % sample rate
-sp = 'De'; % species code (can be: 'Ko' or 'k' (kogia);
+srate = 96; % sample rate
+sp = 'Dl'; % species code (can be: 'Ko' or 'k' (kogia);
 % 'Zc' or 'z' (Cuvier's),'Me' or 'm' (Gervais'), 'Md' (Blainville's), BWG,...
 % 'De' (Dolphin), 'Po' (porpoise), 'MFA', 'whs' (whistles), 'Dl' (beluga)
 c4fd = 100; % Interval to check for false detections
-sdir ='G:\MC\MC04_TPWS'; %Directory with TPWS files
+sdir ='E:\Data\Kelby\test2017'; %Directory with TPWS files
 %tfName = 'E:\TF_files'; % Directory ...
 % with .tf files (directory containing folders with different series ...
 % (e.g. 300_series,400_series)
@@ -43,7 +43,7 @@ colorTab = round(colorTab.*100)/100;
 %% Settings preferences to override defaults
 % Comment these in as needed to override detEdit defaults
 
-spParamsUser.ltsaLims = [0,100]; % min and max ylimits in kHz for ltsa plot
+spParamsUser.ltsaLims = [0,48]; % min and max ylimits in kHz for ltsa plot
 spParamsUser.ltsaMax = 6; % ltsa maximum duration per session
 spParamsUser.tfSelect = 0; % freq used for transfer function, leave at 0 if no adjustment
 % spParamsUser.specChar = 'Unk';  %Simone abbreviation for species
@@ -52,14 +52,14 @@ spParamsUser.speName = '';  % Species code used in file names
 % spParamsUser.fLow = 5; % Minimum frequency of interest in kHz
 % spParamsUser.fHi = 10;%  Maximum frequency of interest in kHz
 
-% spParamsUser.threshRL = 0; % minimum RL threshold in dB peak-to-peak
+spParamsUser.threshRL = 0; % minimum RL threshold in dB peak-to-peak
 % spParamsUser.threshRMS = 126; % RMS threshold cutoff
 % spParamsUser.threshHiFreq = 30; % high freq cutoff for clicks
-% spParamsUser.ltsaContrast = 116; % ltsa contrast
-% spParamsUser.ltsaBright = 55; % ltsa brightness
+spParamsUser.ltsaContrast = 116; % ltsa contrast
+spParamsUser.ltsaBright = 30; % ltsa brightness
 % % spParamsUser.ltsaLims = [0,100]; % max and min of LTSA plot
-spParamsUser.rlLow = 115; % PP plot window low limit
-spParamsUser.rlHi = 165; % PP plot window high limit
+spParamsUser.rlLow = 60; % PP plot window low limit
+spParamsUser.rlHi = 110; % PP plot window high limit
 % spParamsUser.dfManual = []; % LTSA step size in 10 [Hz] bins
 % spParamsUser.p1Low = thresRL - 5;
 % spParamsUser.p1Hi = 170;
@@ -69,7 +69,7 @@ spParamsUser.rlHi = 165; % PP plot window high limit
 specploton = 1; %1 = yes spec plot 0 = no spec plot
 gth = .5;    % gap time in hrs between sessions
 minNdet = 1; % minimum number of detections per session. Sessions with fewer than this will be skipped
-maxDetLoad = 4e5; % [] - read all or 4e5 - the number of detections above 
+maxDetLoad = 1e4; % [] - read all or 4e5 - the number of detections above 
 % which you want to read from disk instead of loading all spectra and 
 % timeseries into memory this is for large files (e.g. dolphin click detections)
 % if maxDetLoad exist, plotaxes can be defined to keep the format of plot

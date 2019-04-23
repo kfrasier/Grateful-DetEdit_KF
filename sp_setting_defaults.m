@@ -136,12 +136,12 @@ elseif strcmpi(sp,'whs')
     dfManual = 10;   
     ltsaContrast = 310; ltsaBright = 100; 
     ltsaLims = [5,30];
-elseif strcmpi(sp,'Dl')
-    speName = 'Beluga'; 
-    tfSelect = 45000;
+elseif strcmpi(sp,'Narwhal')
+    speName = 'Narwhal'; 
+    tfSelect = 0;
     dtHi = 0.5;
     fLow = 20;  
-    threshRL = 110;
+    threshRL = 0;
     rlLow = threshRL - 5; rlHi = 170;
     ltsaContrast = 200; ltsaBright = 70;
     iciRange = [20, 500];
